@@ -1,0 +1,24 @@
+C:\Users\asus\Anaconda3\python.exe "D:/_UdeM _ InfoMath/IFT3395_MachineLearning/Competition2/code/models/soft_voting/main.py"
+starting voting classifier...
+2021-12-14 00:49:16.378162
+label percentage for training dataset:
+(0.3352096774193548, 0.6647903225806452)
+soft voting  f1_score on training dataset:
+0.9901517812799051
+              precision    recall  f1-score   support
+
+         0.0       0.98      0.98      0.98     20783
+         1.0       0.99      0.99      0.99     41217
+
+    accuracy                           0.99     62000
+   macro avg       0.99      0.98      0.99     62000
+weighted avg       0.99      0.99      0.99     62000
+
+[0 1 1 ... 0 0 0]
+label percentage for prediction:
+0.4483333333333333
+0.5516666666666666
+end
+2021-12-14 01:00:41.650284
+
+Process finished with exit code 0

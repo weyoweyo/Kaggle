@@ -1,0 +1,23 @@
+starting voting classifier...
+2021-12-14 16:25:10.414149
+label percentage for training dataset:
+(0.3352096774193548, 0.6647903225806452)
+soft voting  f1_score on training dataset:
+0.9801211274728184
+              precision    recall  f1-score   support
+
+         0.0       0.97      0.95      0.96     20783
+         1.0       0.97      0.99      0.98     41217
+
+    accuracy                           0.97     62000
+   macro avg       0.97      0.97      0.97     62000
+weighted avg       0.97      0.97      0.97     62000
+
+[0 1 1 ... 0 0 0]
+label percentage for prediction:
+0.44
+0.56
+end
+2021-12-14 16:34:49.210933
+
+Process finished with exit code 0

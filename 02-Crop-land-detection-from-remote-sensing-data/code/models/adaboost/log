@@ -1,0 +1,25 @@
+random_search_best_params
+{'n_estimators': 150}
+random_search_best_score
+0.784068100358423
+
+ada boost  f1_score on training dataset:
+0.8513690545676226
+              precision    recall  f1-score   support
+
+         0.0       0.73      0.62      0.67     18709
+         1.0       0.82      0.88      0.85     37091
+
+    accuracy                           0.79     55800
+   macro avg       0.77      0.75      0.76     55800
+weighted avg       0.79      0.79      0.79     55800
+
+[0 0 1 ... 0 1 0]
+              precision    recall  f1-score   support
+
+         0.0       0.72      0.61      0.66      2074
+         1.0       0.82      0.88      0.85      4126
+
+    accuracy                           0.79      6200
+   macro avg       0.77      0.74      0.75      6200
+weighted avg       0.78      0.79      0.78      6200

@@ -1,0 +1,31 @@
+rf_best = RandomForestClassifier(n_estimators=350,
+                                 max_depth=45,
+                                 max_features='auto',
+                                 bootstrap=True,
+                                 min_samples_leaf=1,
+                                 min_samples_split=2)
+
+starting random forest hyperparameter tuning...
+2021-11-27 21:32:46.135548
+rf  f1_score on training dataset:
+0.9941850267812572
+              precision    recall  f1-score   support
+
+         0.0       0.99      0.99      0.99     18709
+         1.0       1.00      0.99      0.99     37091
+
+    accuracy                           0.99     55800
+   macro avg       0.99      0.99      0.99     55800
+weighted avg       0.99      0.99      0.99     55800
+
+[0 0 1 ... 1 1 0]
+              precision    recall  f1-score   support
+
+         0.0       0.82      0.72      0.77      2074
+         1.0       0.87      0.92      0.89      4126
+
+    accuracy                           0.85      6200
+   macro avg       0.84      0.82      0.83      6200
+weighted avg       0.85      0.85      0.85      6200
+end
+2021-11-27 21:37:01.865805

@@ -1,0 +1,405 @@
+batch_size = 128
+input_size = 18       # number of features
+hidden_size = 100     # number of hidden neurons
+layer_size = 2        # number of layers
+output_size = 2      # possible choices
+
+
+train all the data
+47 rows different compared to soft voting
+public score: 0.97029
+
+
+2021-12-16 20:30:31.975315
+Get data ready...
+Training started...
+TRAIN | Epoch: 1/50 | Loss: 0.45 | Accuracy: 0.78
+TRAIN | Epoch: 2/50 | Loss: 0.39 | Accuracy: 0.81
+TRAIN | Epoch: 3/50 | Loss: 0.37 | Accuracy: 0.82
+TRAIN | Epoch: 4/50 | Loss: 0.35 | Accuracy: 0.83
+TRAIN | Epoch: 5/50 | Loss: 0.34 | Accuracy: 0.83
+TRAIN | Epoch: 6/50 | Loss: 0.33 | Accuracy: 0.84
+TRAIN | Epoch: 7/50 | Loss: 0.33 | Accuracy: 0.84
+TRAIN | Epoch: 8/50 | Loss: 0.32 | Accuracy: 0.85
+TRAIN | Epoch: 9/50 | Loss: 0.31 | Accuracy: 0.85
+TRAIN | Epoch: 10/50 | Loss: 0.30 | Accuracy: 0.86
+TRAIN | Epoch: 11/50 | Loss: 0.29 | Accuracy: 0.86
+TRAIN | Epoch: 12/50 | Loss: 0.28 | Accuracy: 0.87
+TRAIN | Epoch: 13/50 | Loss: 0.27 | Accuracy: 0.87
+TRAIN | Epoch: 14/50 | Loss: 0.26 | Accuracy: 0.88
+TRAIN | Epoch: 15/50 | Loss: 0.25 | Accuracy: 0.88
+TRAIN | Epoch: 16/50 | Loss: 0.23 | Accuracy: 0.89
+TRAIN | Epoch: 17/50 | Loss: 0.22 | Accuracy: 0.90
+TRAIN | Epoch: 18/50 | Loss: 0.21 | Accuracy: 0.90
+TRAIN | Epoch: 19/50 | Loss: 0.20 | Accuracy: 0.91
+TRAIN | Epoch: 20/50 | Loss: 0.19 | Accuracy: 0.91
+TRAIN | Epoch: 21/50 | Loss: 0.18 | Accuracy: 0.92
+TRAIN | Epoch: 22/50 | Loss: 0.17 | Accuracy: 0.92
+TRAIN | Epoch: 23/50 | Loss: 0.16 | Accuracy: 0.93
+TRAIN | Epoch: 24/50 | Loss: 0.16 | Accuracy: 0.93
+TRAIN | Epoch: 25/50 | Loss: 0.15 | Accuracy: 0.94
+TRAIN | Epoch: 26/50 | Loss: 0.13 | Accuracy: 0.94
+TRAIN | Epoch: 27/50 | Loss: 0.13 | Accuracy: 0.94
+TRAIN | Epoch: 28/50 | Loss: 0.12 | Accuracy: 0.95
+TRAIN | Epoch: 29/50 | Loss: 0.12 | Accuracy: 0.95
+TRAIN | Epoch: 30/50 | Loss: 0.12 | Accuracy: 0.95
+TRAIN | Epoch: 31/50 | Loss: 0.10 | Accuracy: 0.96
+TRAIN | Epoch: 32/50 | Loss: 0.10 | Accuracy: 0.96
+TRAIN | Epoch: 33/50 | Loss: 0.10 | Accuracy: 0.96
+TRAIN | Epoch: 34/50 | Loss: 0.09 | Accuracy: 0.96
+TRAIN | Epoch: 35/50 | Loss: 0.09 | Accuracy: 0.96
+TRAIN | Epoch: 36/50 | Loss: 0.09 | Accuracy: 0.96
+TRAIN | Epoch: 37/50 | Loss: 0.08 | Accuracy: 0.97
+TRAIN | Epoch: 38/50 | Loss: 0.08 | Accuracy: 0.97
+TRAIN | Epoch: 39/50 | Loss: 0.07 | Accuracy: 0.97
+TRAIN | Epoch: 40/50 | Loss: 0.07 | Accuracy: 0.97
+TRAIN | Epoch: 41/50 | Loss: 0.07 | Accuracy: 0.97
+TRAIN | Epoch: 42/50 | Loss: 0.07 | Accuracy: 0.97
+TRAIN | Epoch: 43/50 | Loss: 0.07 | Accuracy: 0.97
+TRAIN | Epoch: 44/50 | Loss: 0.07 | Accuracy: 0.97
+TRAIN | Epoch: 45/50 | Loss: 0.07 | Accuracy: 0.97
+TRAIN | Epoch: 46/50 | Loss: 0.06 | Accuracy: 0.97
+TRAIN | Epoch: 47/50 | Loss: 0.06 | Accuracy: 0.98
+TRAIN | Epoch: 48/50 | Loss: 0.06 | Accuracy: 0.98
+TRAIN | Epoch: 49/50 | Loss: 0.06 | Accuracy: 0.97
+TRAIN | Epoch: 50/50 | Loss: 0.06 | Accuracy: 0.98
+tensor([0, 1, 1,  ..., 1, 0, 1])
+label percentage for prediction:
+0.4691666666666667
+0.5308333333333334
+
+
+
+
+
+
+-----------------------------------------------------------------
+batch_size = 128
+input_size = 18       # number of features
+hidden_size = 75     # number of hidden neurons
+layer_size = 2        # number of layers
+output_size = 2      # possible choices
+
+starting lstm...
+2021-12-16 19:23:02.664935
+Get data ready...
+Training started...
+TRAIN | Epoch: 1/50 | Loss: 0.46 | Accuracy: 0.77
+Testing Started...
+TEST | f1 for test : 0.84759
+TRAIN | Epoch: 2/50 | Loss: 0.40 | Accuracy: 0.81
+Testing Started...
+TEST | f1 for test : 0.86153
+TRAIN | Epoch: 3/50 | Loss: 0.38 | Accuracy: 0.82
+Testing Started...
+TEST | f1 for test : 0.86803
+TRAIN | Epoch: 4/50 | Loss: 0.36 | Accuracy: 0.83
+Testing Started...
+TEST | f1 for test : 0.86699
+TRAIN | Epoch: 5/50 | Loss: 0.35 | Accuracy: 0.83
+Testing Started...
+TEST | f1 for test : 0.87068
+TRAIN | Epoch: 6/50 | Loss: 0.34 | Accuracy: 0.84
+Testing Started...
+TEST | f1 for test : 0.87165
+TRAIN | Epoch: 7/50 | Loss: 0.33 | Accuracy: 0.84
+Testing Started...
+TEST | f1 for test : 0.87389
+TRAIN | Epoch: 8/50 | Loss: 0.33 | Accuracy: 0.85
+Testing Started...
+TEST | f1 for test : 0.87160
+TRAIN | Epoch: 9/50 | Loss: 0.32 | Accuracy: 0.85
+Testing Started...
+TEST | f1 for test : 0.87613
+TRAIN | Epoch: 10/50 | Loss: 0.31 | Accuracy: 0.85
+Testing Started...
+TEST | f1 for test : 0.87214
+TRAIN | Epoch: 11/50 | Loss: 0.30 | Accuracy: 0.86
+Testing Started...
+TEST | f1 for test : 0.87332
+TRAIN | Epoch: 12/50 | Loss: 0.29 | Accuracy: 0.86
+Testing Started...
+TEST | f1 for test : 0.87377
+TRAIN | Epoch: 13/50 | Loss: 0.29 | Accuracy: 0.87
+Testing Started...
+TEST | f1 for test : 0.87371
+TRAIN | Epoch: 14/50 | Loss: 0.28 | Accuracy: 0.87
+Testing Started...
+TEST | f1 for test : 0.87345
+TRAIN | Epoch: 15/50 | Loss: 0.27 | Accuracy: 0.87
+Testing Started...
+TEST | f1 for test : 0.87379
+TRAIN | Epoch: 16/50 | Loss: 0.26 | Accuracy: 0.88
+Testing Started...
+TEST | f1 for test : 0.87546
+TRAIN | Epoch: 17/50 | Loss: 0.25 | Accuracy: 0.88
+Testing Started...
+TEST | f1 for test : 0.87326
+TRAIN | Epoch: 18/50 | Loss: 0.24 | Accuracy: 0.89
+Testing Started...
+TEST | f1 for test : 0.87736
+TRAIN | Epoch: 19/50 | Loss: 0.23 | Accuracy: 0.89
+Testing Started...
+TEST | f1 for test : 0.87580
+TRAIN | Epoch: 20/50 | Loss: 0.23 | Accuracy: 0.90
+Testing Started...
+TEST | f1 for test : 0.87483
+TRAIN | Epoch: 21/50 | Loss: 0.22 | Accuracy: 0.90
+Testing Started...
+TEST | f1 for test : 0.87258
+TRAIN | Epoch: 22/50 | Loss: 0.21 | Accuracy: 0.91
+Testing Started...
+TEST | f1 for test : 0.87164
+TRAIN | Epoch: 23/50 | Loss: 0.20 | Accuracy: 0.91
+Testing Started...
+TEST | f1 for test : 0.87070
+TRAIN | Epoch: 24/50 | Loss: 0.19 | Accuracy: 0.91
+Testing Started...
+TEST | f1 for test : 0.86923
+TRAIN | Epoch: 25/50 | Loss: 0.19 | Accuracy: 0.92
+Testing Started...
+TEST | f1 for test : 0.86880
+TRAIN | Epoch: 26/50 | Loss: 0.18 | Accuracy: 0.92
+Testing Started...
+TEST | f1 for test : 0.86945
+TRAIN | Epoch: 27/50 | Loss: 0.17 | Accuracy: 0.93
+Testing Started...
+TEST | f1 for test : 0.86748
+TRAIN | Epoch: 28/50 | Loss: 0.16 | Accuracy: 0.93
+Testing Started...
+TEST | f1 for test : 0.87019
+TRAIN | Epoch: 29/50 | Loss: 0.15 | Accuracy: 0.93
+Testing Started...
+TEST | f1 for test : 0.86631
+TRAIN | Epoch: 30/50 | Loss: 0.15 | Accuracy: 0.94
+Testing Started...
+TEST | f1 for test : 0.86910
+TRAIN | Epoch: 31/50 | Loss: 0.15 | Accuracy: 0.94
+Testing Started...
+TEST | f1 for test : 0.86880
+TRAIN | Epoch: 32/50 | Loss: 0.14 | Accuracy: 0.94
+Testing Started...
+TEST | f1 for test : 0.86819
+TRAIN | Epoch: 33/50 | Loss: 0.13 | Accuracy: 0.95
+Testing Started...
+TEST | f1 for test : 0.87490
+TRAIN | Epoch: 34/50 | Loss: 0.12 | Accuracy: 0.95
+Testing Started...
+TEST | f1 for test : 0.87365
+TRAIN | Epoch: 35/50 | Loss: 0.12 | Accuracy: 0.95
+Testing Started...
+TEST | f1 for test : 0.87160
+TRAIN | Epoch: 36/50 | Loss: 0.12 | Accuracy: 0.95
+Testing Started...
+TEST | f1 for test : 0.86691
+TRAIN | Epoch: 37/50 | Loss: 0.12 | Accuracy: 0.95
+Testing Started...
+TEST | f1 for test : 0.86691
+TRAIN | Epoch: 38/50 | Loss: 0.10 | Accuracy: 0.96
+Testing Started...
+TEST | f1 for test : 0.86924
+TRAIN | Epoch: 39/50 | Loss: 0.10 | Accuracy: 0.96
+Testing Started...
+TEST | f1 for test : 0.86725
+TRAIN | Epoch: 40/50 | Loss: 0.10 | Accuracy: 0.96
+Testing Started...
+TEST | f1 for test : 0.86939
+TRAIN | Epoch: 41/50 | Loss: 0.10 | Accuracy: 0.96
+Testing Started...
+TEST | f1 for test : 0.86862
+TRAIN | Epoch: 42/50 | Loss: 0.09 | Accuracy: 0.96
+Testing Started...
+TEST | f1 for test : 0.86211
+TRAIN | Epoch: 43/50 | Loss: 0.09 | Accuracy: 0.96
+Testing Started...
+TEST | f1 for test : 0.86906
+TRAIN | Epoch: 44/50 | Loss: 0.09 | Accuracy: 0.97
+Testing Started...
+TEST | f1 for test : 0.86605
+TRAIN | Epoch: 45/50 | Loss: 0.08 | Accuracy: 0.97
+Testing Started...
+TEST | f1 for test : 0.86617
+TRAIN | Epoch: 46/50 | Loss: 0.08 | Accuracy: 0.97
+Testing Started...
+TEST | f1 for test : 0.86557
+TRAIN | Epoch: 47/50 | Loss: 0.08 | Accuracy: 0.97
+Testing Started...
+TEST | f1 for test : 0.86587
+TRAIN | Epoch: 48/50 | Loss: 0.08 | Accuracy: 0.97
+Testing Started...
+TEST | f1 for test : 0.86682
+TRAIN | Epoch: 49/50 | Loss: 0.07 | Accuracy: 0.97
+Testing Started...
+TEST | f1 for test : 0.86242
+TRAIN | Epoch: 50/50 | Loss: 0.07 | Accuracy: 0.97
+Testing Started...
+TEST | f1 for test : 0.86704
+tensor([0, 1, 1,  ..., 0, 0, 1])
+label percentage for prediction:
+0.4725
+0.5275
+-------------------------------------------------------------------------
+batch_size = 128
+input_size = 18       # number of features
+hidden_size = 50     # number of hidden neurons
+layer_size = 2        # number of layers
+output_size = 2      # possible choices
+
+starting lstm...
+2021-12-16 18:54:48.284238
+Get data ready...
+Training started...
+TRAIN | Epoch: 1/50 | Loss: 0.46 | Accuracy: 0.77
+Testing Started...
+TEST | f1 for test : 0.84965
+TRAIN | Epoch: 2/50 | Loss: 0.40 | Accuracy: 0.80
+Testing Started...
+TEST | f1 for test : 0.85637
+TRAIN | Epoch: 3/50 | Loss: 0.38 | Accuracy: 0.82
+Testing Started...
+TEST | f1 for test : 0.86751
+TRAIN | Epoch: 4/50 | Loss: 0.37 | Accuracy: 0.82
+Testing Started...
+TEST | f1 for test : 0.87018
+TRAIN | Epoch: 5/50 | Loss: 0.36 | Accuracy: 0.83
+Testing Started...
+TEST | f1 for test : 0.87117
+TRAIN | Epoch: 6/50 | Loss: 0.35 | Accuracy: 0.83
+Testing Started...
+TEST | f1 for test : 0.87126
+TRAIN | Epoch: 7/50 | Loss: 0.34 | Accuracy: 0.84
+Testing Started...
+TEST | f1 for test : 0.87024
+TRAIN | Epoch: 8/50 | Loss: 0.33 | Accuracy: 0.84
+Testing Started...
+TEST | f1 for test : 0.87011
+TRAIN | Epoch: 9/50 | Loss: 0.33 | Accuracy: 0.84
+Testing Started...
+TEST | f1 for test : 0.86828
+TRAIN | Epoch: 10/50 | Loss: 0.32 | Accuracy: 0.85
+Testing Started...
+TEST | f1 for test : 0.86669
+TRAIN | Epoch: 11/50 | Loss: 0.32 | Accuracy: 0.85
+Testing Started...
+TEST | f1 for test : 0.86728
+TRAIN | Epoch: 12/50 | Loss: 0.31 | Accuracy: 0.85
+Testing Started...
+TEST | f1 for test : 0.86486
+TRAIN | Epoch: 13/50 | Loss: 0.30 | Accuracy: 0.86
+Testing Started...
+TEST | f1 for test : 0.86459
+TRAIN | Epoch: 14/50 | Loss: 0.30 | Accuracy: 0.86
+Testing Started...
+TEST | f1 for test : 0.86981
+TRAIN | Epoch: 15/50 | Loss: 0.29 | Accuracy: 0.86
+Testing Started...
+TEST | f1 for test : 0.87067
+TRAIN | Epoch: 16/50 | Loss: 0.29 | Accuracy: 0.87
+Testing Started...
+TEST | f1 for test : 0.87116
+TRAIN | Epoch: 17/50 | Loss: 0.28 | Accuracy: 0.87
+Testing Started...
+TEST | f1 for test : 0.87268
+TRAIN | Epoch: 18/50 | Loss: 0.27 | Accuracy: 0.87
+Testing Started...
+TEST | f1 for test : 0.86856
+TRAIN | Epoch: 19/50 | Loss: 0.27 | Accuracy: 0.87
+Testing Started...
+TEST | f1 for test : 0.87221
+TRAIN | Epoch: 20/50 | Loss: 0.26 | Accuracy: 0.88
+Testing Started...
+TEST | f1 for test : 0.86922
+TRAIN | Epoch: 21/50 | Loss: 0.26 | Accuracy: 0.88
+Testing Started...
+TEST | f1 for test : 0.87041
+TRAIN | Epoch: 22/50 | Loss: 0.25 | Accuracy: 0.88
+Testing Started...
+TEST | f1 for test : 0.87148
+TRAIN | Epoch: 23/50 | Loss: 0.24 | Accuracy: 0.89
+Testing Started...
+TEST | f1 for test : 0.86580
+TRAIN | Epoch: 24/50 | Loss: 0.24 | Accuracy: 0.89
+Testing Started...
+TEST | f1 for test : 0.86925
+TRAIN | Epoch: 25/50 | Loss: 0.23 | Accuracy: 0.90
+Testing Started...
+TEST | f1 for test : 0.86338
+TRAIN | Epoch: 26/50 | Loss: 0.22 | Accuracy: 0.90
+Testing Started...
+TEST | f1 for test : 0.86827
+TRAIN | Epoch: 27/50 | Loss: 0.22 | Accuracy: 0.90
+Testing Started...
+TEST | f1 for test : 0.86835
+TRAIN | Epoch: 28/50 | Loss: 0.21 | Accuracy: 0.90
+Testing Started...
+TEST | f1 for test : 0.86850
+TRAIN | Epoch: 29/50 | Loss: 0.21 | Accuracy: 0.91
+Testing Started...
+TEST | f1 for test : 0.86871
+TRAIN | Epoch: 30/50 | Loss: 0.20 | Accuracy: 0.91
+Testing Started...
+TEST | f1 for test : 0.86776
+TRAIN | Epoch: 31/50 | Loss: 0.19 | Accuracy: 0.91
+Testing Started...
+TEST | f1 for test : 0.86818
+TRAIN | Epoch: 32/50 | Loss: 0.19 | Accuracy: 0.91
+Testing Started...
+TEST | f1 for test : 0.86515
+TRAIN | Epoch: 33/50 | Loss: 0.19 | Accuracy: 0.92
+Testing Started...
+TEST | f1 for test : 0.86066
+TRAIN | Epoch: 34/50 | Loss: 0.18 | Accuracy: 0.92
+Testing Started...
+TEST | f1 for test : 0.86642
+TRAIN | Epoch: 35/50 | Loss: 0.17 | Accuracy: 0.92
+Testing Started...
+TEST | f1 for test : 0.86650
+TRAIN | Epoch: 36/50 | Loss: 0.17 | Accuracy: 0.93
+Testing Started...
+TEST | f1 for test : 0.86475
+TRAIN | Epoch: 37/50 | Loss: 0.17 | Accuracy: 0.93
+Testing Started...
+TEST | f1 for test : 0.86664
+TRAIN | Epoch: 38/50 | Loss: 0.16 | Accuracy: 0.93
+Testing Started...
+TEST | f1 for test : 0.86650
+TRAIN | Epoch: 39/50 | Loss: 0.16 | Accuracy: 0.93
+Testing Started...
+TEST | f1 for test : 0.86763
+TRAIN | Epoch: 40/50 | Loss: 0.15 | Accuracy: 0.94
+Testing Started...
+TEST | f1 for test : 0.86853
+TRAIN | Epoch: 41/50 | Loss: 0.15 | Accuracy: 0.94
+Testing Started...
+TEST | f1 for test : 0.86876
+TRAIN | Epoch: 42/50 | Loss: 0.14 | Accuracy: 0.94
+Testing Started...
+TEST | f1 for test : 0.86734
+TRAIN | Epoch: 43/50 | Loss: 0.15 | Accuracy: 0.94
+Testing Started...
+TEST | f1 for test : 0.86860
+TRAIN | Epoch: 44/50 | Loss: 0.14 | Accuracy: 0.94
+Testing Started...
+TEST | f1 for test : 0.86536
+TRAIN | Epoch: 45/50 | Loss: 0.14 | Accuracy: 0.94
+Testing Started...
+TEST | f1 for test : 0.86823
+TRAIN | Epoch: 46/50 | Loss: 0.13 | Accuracy: 0.95
+Testing Started...
+TEST | f1 for test : 0.86588
+TRAIN | Epoch: 47/50 | Loss: 0.13 | Accuracy: 0.95
+Testing Started...
+TEST | f1 for test : 0.86692
+TRAIN | Epoch: 48/50 | Loss: 0.13 | Accuracy: 0.95
+Testing Started...
+TEST | f1 for test : 0.86520
+TRAIN | Epoch: 49/50 | Loss: 0.12 | Accuracy: 0.95
+Testing Started...
+TEST | f1 for test : 0.86842
+TRAIN | Epoch: 50/50 | Loss: 0.13 | Accuracy: 0.95
+Testing Started...
+TEST | f1 for test : 0.86856
+tensor([0, 1, 1,  ..., 1, 0, 1])
+label percentage for prediction:
+0.445
+0.555
