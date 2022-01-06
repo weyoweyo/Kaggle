@@ -2,7 +2,7 @@
 to check the notebook,  
 https://nbviewer.jupyter.org/github/weyoweyo/House-Prices-Advanced-Regression-Techniques/blob/main/HousePricesAdvancedRegressionTechniques.ipynb  
 to check the report,  
-https://htmlpreview.github.io/?https://github.com/weyoweyo/House-Prices-Advanced-Regression-Techniques/blob/main/report.html
+https://htmlpreview.github.io/?https://github.com/weyoweyo/Kaggle/blob/main/00-House-Prices-Advanced-Regression-Techniques/report.html
 
 
 
