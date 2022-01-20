@@ -1,0 +1,4 @@
+pytorch:
+batch size: the number of sentences, 128
+sequence length: the number of words in each sentence, which is dynamic
+input size (H underscore in) = the size of each vector which represents the word, which is a pre fixed value
