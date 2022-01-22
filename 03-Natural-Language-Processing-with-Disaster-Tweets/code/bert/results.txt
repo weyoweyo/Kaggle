@@ -1,3 +1,5 @@
 01: public score 0.82347
 02: public score 0.83573
+03: public score 0.82102 
 04: public score 0.83266
+05: public score 0.82071
