@@ -174,7 +174,7 @@ def predict_with_all_train(model, batchSize=128, num_epochs=50, learning_rate=0.
 
 
 class LSTM_CROP(nn.Module):
-    def __init__(self, input_size, hidden_size, layer_size, output_size, bidirectional=True):
+    def __init__(self, input_size, hidden_size, layer_size, output_size, bidirectional=False):
         super(LSTM_CROP, self).__init__()
 
         self.input_size, self.hidden_size, self.layer_size, self.output_size = input_size, hidden_size, layer_size, output_size
@@ -193,7 +193,7 @@ class LSTM_CROP(nn.Module):
         else:
             self.layer = nn.Linear(hidden_size, output_size)
 
-    def forward(self, data, prints=False):
+    def forward(self, data, prints=False, bidirectional=False):
         if prints: print('data shape:', data.shape)
 
         # Set initial states
@@ -216,12 +216,15 @@ class LSTM_CROP(nn.Module):
                          'LSTM: last_hidden_state shape:', last_hidden_state.shape, '\n' +
                          'LSTM: last_cell_state shape:', last_cell_state.shape)
         # Reshape
-        # ht(batc，num_layers * num_directions, h, hidden_size)
-        output = output[:, -1, :]
-        if prints: print('output reshape:', output.shape)
+        # last_hidden_state(batch, num_layers * num_directions, hidden_size)
+        if bidirectional:
+            result = output[:, -1, :] + output[:, -2, :]
+        else:
+            result = output[:, -1, :]
+        if prints: print('output reshape:', result.shape)
 
         # fully connected layer
-        output = self.layer(output)
+        output = self.layer(result)
         if prints: print('fully connected layer: Final output shape:', output.shape)
         return output
 

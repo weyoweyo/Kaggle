@@ -1,0 +1,62 @@
+starting bilstm...
+2022-01-23 04:45:23.436907
+Get data ready...
+Training started...
+TRAIN | Epoch: 1/50 | Loss: 0.45 | Accuracy: 0.78
+TRAIN | Epoch: 2/50 | Loss: 0.39 | Accuracy: 0.81
+TRAIN | Epoch: 3/50 | Loss: 0.37 | Accuracy: 0.82
+TRAIN | Epoch: 4/50 | Loss: 0.35 | Accuracy: 0.83
+TRAIN | Epoch: 5/50 | Loss: 0.34 | Accuracy: 0.84
+TRAIN | Epoch: 6/50 | Loss: 0.33 | Accuracy: 0.84
+TRAIN | Epoch: 7/50 | Loss: 0.32 | Accuracy: 0.84
+TRAIN | Epoch: 8/50 | Loss: 0.32 | Accuracy: 0.85
+TRAIN | Epoch: 9/50 | Loss: 0.31 | Accuracy: 0.86
+TRAIN | Epoch: 10/50 | Loss: 0.30 | Accuracy: 0.86
+TRAIN | Epoch: 11/50 | Loss: 0.29 | Accuracy: 0.86
+TRAIN | Epoch: 12/50 | Loss: 0.28 | Accuracy: 0.87
+TRAIN | Epoch: 13/50 | Loss: 0.27 | Accuracy: 0.87
+TRAIN | Epoch: 14/50 | Loss: 0.25 | Accuracy: 0.88
+TRAIN | Epoch: 15/50 | Loss: 0.24 | Accuracy: 0.89
+TRAIN | Epoch: 16/50 | Loss: 0.23 | Accuracy: 0.89
+TRAIN | Epoch: 17/50 | Loss: 0.22 | Accuracy: 0.90
+TRAIN | Epoch: 18/50 | Loss: 0.21 | Accuracy: 0.91
+TRAIN | Epoch: 19/50 | Loss: 0.20 | Accuracy: 0.91
+TRAIN | Epoch: 20/50 | Loss: 0.19 | Accuracy: 0.92
+TRAIN | Epoch: 21/50 | Loss: 0.18 | Accuracy: 0.92
+TRAIN | Epoch: 22/50 | Loss: 0.17 | Accuracy: 0.92
+TRAIN | Epoch: 23/50 | Loss: 0.16 | Accuracy: 0.93
+TRAIN | Epoch: 24/50 | Loss: 0.15 | Accuracy: 0.93
+TRAIN | Epoch: 25/50 | Loss: 0.14 | Accuracy: 0.94
+TRAIN | Epoch: 26/50 | Loss: 0.13 | Accuracy: 0.94
+TRAIN | Epoch: 27/50 | Loss: 0.13 | Accuracy: 0.95
+TRAIN | Epoch: 28/50 | Loss: 0.13 | Accuracy: 0.95
+TRAIN | Epoch: 29/50 | Loss: 0.11 | Accuracy: 0.95
+TRAIN | Epoch: 30/50 | Loss: 0.11 | Accuracy: 0.95
+TRAIN | Epoch: 31/50 | Loss: 0.11 | Accuracy: 0.96
+TRAIN | Epoch: 32/50 | Loss: 0.10 | Accuracy: 0.96
+TRAIN | Epoch: 33/50 | Loss: 0.09 | Accuracy: 0.96
+TRAIN | Epoch: 34/50 | Loss: 0.10 | Accuracy: 0.96
+TRAIN | Epoch: 35/50 | Loss: 0.09 | Accuracy: 0.96
+TRAIN | Epoch: 36/50 | Loss: 0.08 | Accuracy: 0.97
+TRAIN | Epoch: 37/50 | Loss: 0.08 | Accuracy: 0.97
+TRAIN | Epoch: 38/50 | Loss: 0.08 | Accuracy: 0.97
+TRAIN | Epoch: 39/50 | Loss: 0.08 | Accuracy: 0.97
+TRAIN | Epoch: 40/50 | Loss: 0.08 | Accuracy: 0.97
+TRAIN | Epoch: 41/50 | Loss: 0.07 | Accuracy: 0.97
+TRAIN | Epoch: 42/50 | Loss: 0.07 | Accuracy: 0.97
+TRAIN | Epoch: 43/50 | Loss: 0.07 | Accuracy: 0.97
+TRAIN | Epoch: 44/50 | Loss: 0.07 | Accuracy: 0.97
+TRAIN | Epoch: 45/50 | Loss: 0.07 | Accuracy: 0.97
+TRAIN | Epoch: 46/50 | Loss: 0.07 | Accuracy: 0.97
+TRAIN | Epoch: 47/50 | Loss: 0.06 | Accuracy: 0.97
+TRAIN | Epoch: 48/50 | Loss: 0.07 | Accuracy: 0.97
+TRAIN | Epoch: 49/50 | Loss: 0.06 | Accuracy: 0.98
+TRAIN | Epoch: 50/50 | Loss: 0.06 | Accuracy: 0.98
+tensor([0, 1, 1,  ..., 0, 1, 1])
+label percentage for prediction:
+0.43833333333333335
+0.5616666666666666
+ending bilstm...
+2022-01-23 05:44:29.381121
+0.95196
+0.96402
