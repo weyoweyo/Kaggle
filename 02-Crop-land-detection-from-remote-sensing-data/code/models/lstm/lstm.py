@@ -216,6 +216,7 @@ class LSTM_CROP(nn.Module):
                          'LSTM: last_hidden_state shape:', last_hidden_state.shape, '\n' +
                          'LSTM: last_cell_state shape:', last_cell_state.shape)
         # Reshape
+        # ht(batc，num_layers * num_directions, h, hidden_size)
         output = output[:, -1, :]
         if prints: print('output reshape:', output.shape)
 
