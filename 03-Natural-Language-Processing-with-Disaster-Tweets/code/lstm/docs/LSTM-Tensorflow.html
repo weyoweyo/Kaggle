@@ -3,7 +3,7 @@
 <head><meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>pytorch-text-classification-torchtext-lstm</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>lstm-baseline</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 
 
 
@@ -13968,62 +13968,30 @@ a.anchor-link {
     </script>
     <!-- End of mathjax configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
-
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h1 id="Sentence-Classification">Sentence Classification<a class="anchor-link" href="#Sentence-Classification">&#182;</a></h1><p>In this notebook, We will be classifying text (The data-set used here contains tweets, but the process shown here can be adapted for other text classification tasks too.)
-The content is arranged as follows:</p>
-<ul>
-<li>Cleaninig and basic pre-processing of text</li>
-<li>Building a vocabulary, and creating iterators using TorchText</li>
-<li>Building a sequence model - LSTM using Pytorch to predict labels</li>
-</ul>
-<p><strong><em>Notebook is still under construction....</em></strong>
-<a href="https://www.kaggle.com/swarnabha/pytorch-text-classification-torchtext-lstm">https://www.kaggle.com/swarnabha/pytorch-text-classification-torchtext-lstm</a></p>
-
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Check the files in Data</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># This Python 3 environment comes with many helpful analytics libraries installed</span>
+<span class="c1"># It is defined by the kaggle/python docker image: https://github.com/kaggle/docker-python</span>
+<span class="c1"># For example, here&#39;s several helpful packages to load in </span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> <span class="c1"># linear algebra</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span> <span class="c1"># data processing, CSV file I/O (e.g. pd.read_csv)</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="k">for</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="s1">&#39;/kaggle/input&#39;</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">SpatialDropout1D</span><span class="p">,</span> <span class="n">add</span><span class="p">,</span> <span class="n">concatenate</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">LSTM</span><span class="p">,</span> <span class="n">Bidirectional</span><span class="p">,</span> <span class="n">GlobalMaxPooling1D</span><span class="p">,</span> <span class="n">GlobalAveragePooling1D</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.preprocessing</span> <span class="kn">import</span> <span class="n">text</span><span class="p">,</span> <span class="n">sequence</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Model</span>
 </pre></div>
 
      </div>
 </div>
 </div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>/kaggle/input/glove-global-vectors-for-word-representation/glove.6B.100d.txt
-/kaggle/input/glove-global-vectors-for-word-representation/glove.6B.50d.txt
-/kaggle/input/glove-global-vectors-for-word-representation/glove.6B.200d.txt
-/kaggle/input/nlp-getting-started/sample_submission.csv
-/kaggle/input/nlp-getting-started/test.csv
-/kaggle/input/nlp-getting-started/train.csv
-</pre>
-</div>
-</div>
-
-</div>
-
 </div>
 
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
@@ -14032,16 +14000,8 @@ The content is arranged as follows:</p>
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[2]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
-<span class="kn">import</span> <span class="nn">time</span>
-
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torchtext</span> <span class="kn">import</span> <span class="n">data</span>
-<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">CRAWL_EMBEDDING_PATH</span> <span class="o">=</span> <span class="s1">&#39;../input/pickled-crawl300d2m-for-kernel-competitions/crawl-300d-2M.pkl&#39;</span>
+<span class="n">GLOVE_EMBEDDING_PATH</span> <span class="o">=</span> <span class="s1">&#39;../input/pickled-glove840b300d-for-10sec-loading/glove.840B.300d.pkl&#39;</span>
 </pre></div>
 
      </div>
@@ -14055,10 +14015,26 @@ The content is arranged as follows:</p>
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Import Data</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_coefs</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="o">*</span><span class="n">arr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">word</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
 
-<span class="n">test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;../input/nlp-getting-started/test.csv&quot;</span><span class="p">)</span>
-<span class="n">train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;../input/nlp-getting-started/train.csv&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">load_embeddings</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">emb_arr</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">emb_arr</span>
+
+<span class="k">def</span> <span class="nf">build_matrix</span><span class="p">(</span><span class="n">word_index</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="n">embedding_index</span> <span class="o">=</span> <span class="n">load_embeddings</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">embedding_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">word_index</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">300</span><span class="p">))</span>
+    <span class="n">unknown_words</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">word_index</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">embedding_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">embedding_index</span><span class="p">[</span><span class="n">word</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">unknown_words</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">embedding_matrix</span><span class="p">,</span> <span class="n">unknown_words</span>
 </pre></div>
 
      </div>
@@ -14066,20 +14042,13 @@ The content is arranged as follows:</p>
 </div>
 </div>
 
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Data-Pre-Processing"><strong>Data Pre Processing</strong><a class="anchor-link" href="#Data-Pre-Processing">&#182;</a></h2><p>Cleaning the text data</p>
-
-</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Shape of dataset</span>
-<span class="n">train</span><span class="o">.</span><span class="n">shape</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;../input/nlp-getting-started&#39;</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14101,7 +14070,7 @@ The content is arranged as follows:</p>
 
 
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
-<pre>(7613, 5)</pre>
+<pre>[&#39;test.csv&#39;, &#39;train.csv&#39;, &#39;sample_submission.csv&#39;]</pre>
 </div>
 
 </div>
@@ -14110,15 +14079,112 @@ The content is arranged as follows:</p>
 
 </div>
 
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h4 id="Let-us-get-a-glimpse-at-the-data-table">Let us get a glimpse at the data table<a class="anchor-link" href="#Let-us-get-a-glimpse-at-the-data-table">&#182;</a></h4>
-</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[5]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sub</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;../input/nlp-getting-started/sample_submission.csv&#39;</span><span class="p">)</span>
+<span class="n">sub</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[5]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>9</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>11</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[6]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;../input/nlp-getting-started/train.csv&#39;</span><span class="p">)</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;../input/nlp-getting-started/test.csv&#39;</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[7]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">train</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -14137,7 +14203,7 @@ The content is arranged as follows:</p>
 <div class="jp-OutputArea-child">
 
     
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[5]:</div>
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[7]:</div>
 
 
 
@@ -14219,86 +14285,13 @@ The content is arranged as follows:</p>
 
 </div>
 
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h4 id="The-target-column-marks-the-label-of-the-text:">The <code>target</code> column marks the label of the text:<a class="anchor-link" href="#The-target-column-marks-the-label-of-the-text:">&#182;</a></h4><hr>
-<ul>
-<li><strong>label==1</strong> : If the Tweet is about Disasters.</li>
-<li><strong>label==0</strong> : If the Tweet is not about disasters. </li>
-</ul>
-<p>We are only interested in the <code>text</code> and <code>target</code> columns. So we drop the rest.</p>
-
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[6]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># drop &#39;id&#39; , &#39;keyword&#39; and &#39;location&#39; columns.</span>
-<span class="n">train</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="s1">&#39;keyword&#39;</span><span class="p">,</span><span class="s1">&#39;location&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Next-we-clean-and-modify-the-texts,-so-that-the-classification-algorithm-does-not-get-confused-with-irrelevant-information.">Next we clean and modify the texts, so that the classification algorithm does not get confused with irrelevant information.<a class="anchor-link" href="#Next-we-clean-and-modify-the-texts,-so-that-the-classification-algorithm-does-not-get-confused-with-irrelevant-information.">&#182;</a></h3>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[7]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># to clean data</span>
-<span class="k">def</span> <span class="nf">normalise_text</span> <span class="p">(</span><span class="n">text</span><span class="p">):</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="c1"># lowercase</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\#&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="c1"># replaces hashtags</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;http\S+&quot;</span><span class="p">,</span><span class="s2">&quot;URL&quot;</span><span class="p">)</span>  <span class="c1"># remove URL addresses</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;@&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^A-Za-z0-9()!?\&#39;\`</span><span class="se">\&quot;</span><span class="s2">]&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;\s{2,}&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">text</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[8]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span><span class="o">=</span><span class="n">normalise_text</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Let us look at the cleaned text once</p>
-
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[9]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
      </div>
@@ -14314,70 +14307,7 @@ The content is arranged as follows:</p>
 <div class="jp-OutputArea-child">
 
     
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[9]:</div>
-
-
-
-
-<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
-<pre>0    our deeds are the reason of this earthquake ma...
-1                forest fire near la ronge sask canada
-2    all residents asked to &#39;shelter in place&#39; are ...
-3    13 000 people receive wildfires evacuation ord...
-4    just got sent this photo from ruby alaska as s...
-Name: text, dtype: object</pre>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Split the data into training and validation sets</p>
-
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[10]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># split data into train and validation </span>
-<span class="n">train_df</span><span class="p">,</span> <span class="n">valid_df</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[11]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[11]:</div>
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[8]:</div>
 
 
 
@@ -14400,35 +14330,47 @@ Name: text, dtype: object</pre>
   <thead>
     <tr style="text-align: right;">
       <th></th>
+      <th>id</th>
+      <th>keyword</th>
+      <th>location</th>
       <th>text</th>
-      <th>target</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th>433</th>
-      <td>local arsonist lmfao</td>
+      <th>0</th>
       <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Just happened a terrible car crash</td>
     </tr>
     <tr>
-      <th>5643</th>
-      <td>URL paci?c media centre articles australia rsf...</td>
-      <td>0</td>
+      <th>1</th>
+      <td>2</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Heard about #earthquake is different cities, s...</td>
     </tr>
     <tr>
-      <th>3994</th>
-      <td>there's this person amp they reckon when you'r...</td>
-      <td>0</td>
+      <th>2</th>
+      <td>3</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>there is a forest fire at spot pond, geese are...</td>
     </tr>
     <tr>
-      <th>5656</th>
-      <td>coastal german shepherd rescue oc shared a lin...</td>
-      <td>0</td>
+      <th>3</th>
+      <td>9</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Apocalypse lighting. #Spokane #wildfires</td>
     </tr>
     <tr>
-      <th>492</th>
-      <td>christian attacked by muslims at the temple mo...</td>
-      <td>1</td>
+      <th>4</th>
+      <td>11</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Typhoon Soudelor kills 28 in China and Taiwan</td>
     </tr>
   </tbody>
 </table>
@@ -14439,6 +14381,53 @@ Name: text, dtype: object</pre>
 
 </div>
 
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[9]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">TEXT_COLUMN</span> <span class="o">=</span> <span class="s1">&#39;text&#39;</span>
+<span class="n">TARGET_COLUMN</span> <span class="o">=</span> <span class="s1">&#39;target&#39;</span>
+<span class="n">CHARS_TO_REMOVE</span> <span class="o">=</span> <span class="s1">&#39;!&quot;#$%&amp;()*+,-./:;&lt;=&gt;?@[</span><span class="se">\\</span><span class="s1">]^_`{|}~</span><span class="se">\t\n</span><span class="s1">“”’</span><span class="se">\&#39;</span><span class="s1">∞θ÷α•à−β∅³π‘₹´°£€\×™√²—&#39;</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[10]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x_train</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="n">TEXT_COLUMN</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="n">TARGET_COLUMN</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">test</span><span class="p">[</span><span class="n">TEXT_COLUMN</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[11]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">Tokenizer</span><span class="p">(</span><span class="n">filters</span><span class="o">=</span><span class="n">CHARS_TO_REMOVE</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">tokenizer</span><span class="o">.</span><span class="n">fit_on_texts</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">x_train</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">x_test</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
 </div>
 
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
@@ -14447,226 +14436,11 @@ Name: text, dtype: object</pre>
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[12]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">valid_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</pre></div>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">crawl_matrix</span><span class="p">,</span> <span class="n">unknown_words_crawl</span> <span class="o">=</span> <span class="n">build_matrix</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">word_index</span><span class="p">,</span> <span class="n">CRAWL_EMBEDDING_PATH</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;n unknown words (crawl): &#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">unknown_words_crawl</span><span class="p">))</span>
 
-     </div>
-</div>
-</div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[12]:</div>
-
-
-
-<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>text</th>
-      <th>target</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>4993</th>
-      <td>2for1lapdances for the people who died in huma...</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>3860</th>
-      <td>maryland mansion fire that killed 6 caused by ...</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>2434</th>
-      <td>itsqueenbaby i'm at work it's a bunch of ppl a...</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>6489</th>
-      <td>the court s reputation and prestige has sunk e...</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>5143</th>
-      <td>salem 2 nuclear reactor shut down over electri...</td>
-      <td>1</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>The following will help make the results reproducible later.</p>
-
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[13]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">SEED</span> <span class="o">=</span> <span class="mi">42</span>
-
-<span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
-<span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">deterministic</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">benchmark</span> <span class="o">=</span> <span class="kc">False</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>We need to create <code>Field</code> objects to process the text data. These field objects will contain information for converting the texts to Tensors.
-We will set two parameters:</p>
-<ul>
-<li><code>tokenize=spacy</code> and </li>
-<li><code>include_arguments=True</code>
-Which implies that SpaCy will be used to tokenize the texts and that the field objects should include length of the texts - which will be needed to pad the texts. 
-We will later use methods of these objects to create a vocabulary, which will help us create a numerical representation for every token.</li>
-</ul>
-<p>The <code>LabelField</code> is a shallow wrappper around field, useful for data labels.</p>
-
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">TEXT</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">tokenize</span> <span class="o">=</span> <span class="s1">&#39;spacy&#39;</span><span class="p">,</span> <span class="n">include_lengths</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-<span class="n">LABEL</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">LabelField</span><span class="p">(</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Next we create a <code>DataFrameDataset</code> class which will allow us to load the data and the target-labels as a <code>DataSet</code> using a DataFrame as a source of data.
-We will create a vocabulary using the training dataset and then pass the training and validation datasets to the iterator later.</p>
-
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[15]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># source : https://gist.github.com/lextoumbourou/8f90313cbc3598ffbabeeaa1741a11c8</span>
-<span class="c1"># to use DataFrame as a Data source</span>
-
-<span class="k">class</span> <span class="nc">DataFrameDataset</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">is_test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">examples</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-            <span class="n">label</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">target</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_test</span> <span class="k">else</span> <span class="kc">None</span>
-            <span class="n">text</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">text</span>
-            <span class="n">examples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Example</span><span class="o">.</span><span class="n">fromlist</span><span class="p">([</span><span class="n">text</span><span class="p">,</span> <span class="n">label</span><span class="p">],</span> <span class="n">fields</span><span class="p">))</span>
-
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">examples</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">sort_key</span><span class="p">(</span><span class="n">ex</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">splits</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">train_df</span><span class="p">,</span> <span class="n">val_df</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">test_df</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">train_data</span><span class="p">,</span> <span class="n">val_data</span><span class="p">,</span> <span class="n">test_data</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">data_field</span> <span class="o">=</span> <span class="n">fields</span>
-
-        <span class="k">if</span> <span class="n">train_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">train_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">train_df</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">data_field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">val_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">val_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">val_df</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">data_field</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">test_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">test_data</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">test_df</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">data_field</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">val_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<ul>
-<li>We will first create a list called <em>field</em>, where the elements will be a tuple of string (name) and <code>Field</code> object. The <code>Field</code> object for the text should be placed with name 'text'  and the object for label should be placed with name 'label'</li>
-</ul>
-<p>Then we will use the <code>splits</code> method of <code>DataFrameDataset</code>, which will return the training and validation datasets, which will be composed of Examples of the tokenized texts and labels. The texts and labels will have the name that we provide to the <em>field</em>.</p>
-
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[16]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">fields</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span><span class="n">TEXT</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span><span class="n">LABEL</span><span class="p">)]</span>
-
-<span class="n">train_ds</span><span class="p">,</span> <span class="n">val_ds</span> <span class="o">=</span> <span class="n">DataFrameDataset</span><span class="o">.</span><span class="n">splits</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">train_df</span><span class="o">=</span><span class="n">train_df</span><span class="p">,</span> <span class="n">val_df</span><span class="o">=</span><span class="n">valid_df</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[17]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Lets look at a random example</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="n">train_ds</span><span class="p">[</span><span class="mi">15</span><span class="p">]))</span>
-
-<span class="c1"># Check the type </span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">train_ds</span><span class="p">[</span><span class="mi">15</span><span class="p">]))</span>
+<span class="n">glove_matrix</span><span class="p">,</span> <span class="n">unknown_words_glove</span> <span class="o">=</span> <span class="n">build_matrix</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">word_index</span><span class="p">,</span> <span class="n">GLOVE_EMBEDDING_PATH</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;n unknown words (glove): &#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">unknown_words_glove</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -14686,8 +14460,8 @@ We will create a vocabulary using the training dataset and then pass the trainin
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>{&#39;text&#39;: [&#39;vote&#39;, &#39;for&#39;, &#39;directioners&#39;, &#39;vs&#39;, &#39;queens&#39;, &#39;in&#39;, &#39;the&#39;, &#39;5th&#39;, &#39;round&#39;, &#39;of&#39;, &#39;the&#39;, &#39;billboard&#39;, &#39;fanarmyfaceoff&#39;, &#39;URL&#39;], &#39;label&#39;: 0}
-&lt;class &#39;torchtext.data.example.Example&#39;&gt;
+<pre>n unknown words (crawl):  12212
+n unknown words (glove):  12230
 </pre>
 </div>
 </div>
@@ -14696,25 +14470,145 @@ We will create a vocabulary using the training dataset and then pass the trainin
 
 </div>
 
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[13]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">embedding_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">crawl_matrix</span><span class="p">,</span> <span class="n">glove_matrix</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">embedding_matrix</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+     </div>
 </div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>We will now build the vocabulary using only the training dataset. This can be accessed through <code>TEXT.vocab</code> and will be shared by the validation dataset.</p>
-<p>We will use pretrainied 200 dimensional vectors to represent the tokens. Any unknown token will have a zero vector. These vectors will be later loaded as the embedding layer.</p>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[13]:</div>
+
+
+
+
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
+<pre>(33722, 600)</pre>
+</div>
 
 </div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">MAX_LEN</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">LSTM_UNITS</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">DENSE_HIDDEN_UNITS</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">LSTM_UNITS</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[15]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">x_train</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">texts_to_sequences</span><span class="p">(</span><span class="n">x_train</span><span class="p">)</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">texts_to_sequences</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+<span class="n">x_train</span> <span class="o">=</span> <span class="n">sequence</span><span class="o">.</span><span class="n">pad_sequences</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">MAX_LEN</span><span class="p">)</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">sequence</span><span class="o">.</span><span class="n">pad_sequences</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">MAX_LEN</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[16]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">build_model</span><span class="p">(</span><span class="n">embedding_matrix</span><span class="p">):</span>
+    <span class="n">words</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Embedding</span><span class="p">(</span><span class="o">*</span><span class="n">embedding_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="n">embedding_matrix</span><span class="p">],</span> <span class="n">trainable</span><span class="o">=</span><span class="kc">False</span><span class="p">)(</span><span class="n">words</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">SpatialDropout1D</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Bidirectional</span><span class="p">(</span><span class="n">LSTM</span><span class="p">(</span><span class="n">LSTM_UNITS</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="kc">True</span><span class="p">))(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">Bidirectional</span><span class="p">(</span><span class="n">LSTM</span><span class="p">(</span><span class="n">LSTM_UNITS</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="kc">True</span><span class="p">))(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">hidden</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span>
+        <span class="n">GlobalMaxPooling1D</span><span class="p">()(</span><span class="n">x</span><span class="p">),</span>
+        <span class="n">GlobalAveragePooling1D</span><span class="p">()(</span><span class="n">x</span><span class="p">),</span>
+    <span class="p">])</span>
+    <span class="n">hidden</span> <span class="o">=</span> <span class="n">add</span><span class="p">([</span><span class="n">hidden</span><span class="p">,</span> <span class="n">Dense</span><span class="p">(</span><span class="n">DENSE_HIDDEN_UNITS</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">hidden</span><span class="p">)])</span>
+    <span class="n">hidden</span> <span class="o">=</span> <span class="n">add</span><span class="p">([</span><span class="n">hidden</span><span class="p">,</span> <span class="n">Dense</span><span class="p">(</span><span class="n">DENSE_HIDDEN_UNITS</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">hidden</span><span class="p">)])</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">)(</span><span class="n">hidden</span><span class="p">)</span>
+    
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">words</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;binary_crossentropy&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;adam&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">model</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[17]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">NUM_MODELS</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">EPOCHS</span> <span class="o">=</span> <span class="mi">5</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[18]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">MAX_VOCAB_SIZE</span> <span class="o">=</span> <span class="mi">25000</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">checkpoint_predictions</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">weights</span> <span class="o">=</span> <span class="p">[]</span>
 
-<span class="n">TEXT</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">train_ds</span><span class="p">,</span> 
-                 <span class="n">max_size</span> <span class="o">=</span> <span class="n">MAX_VOCAB_SIZE</span><span class="p">,</span> 
-                 <span class="n">vectors</span> <span class="o">=</span> <span class="s1">&#39;glove.6B.200d&#39;</span><span class="p">,</span>
-                 <span class="n">unk_init</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="o">.</span><span class="n">zero_</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">model_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">NUM_MODELS</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">build_model</span><span class="p">(</span><span class="n">embedding_matrix</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">global_epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">EPOCHS</span><span class="p">):</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+            <span class="n">x_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">BATCH_SIZE</span><span class="p">,</span>
+            <span class="n">epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="mi">2</span>
+        <span class="p">)</span>
+        <span class="n">checkpoint_predictions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">BATCH_SIZE</span><span class="p">))</span>
+        <span class="n">weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">global_epoch</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14733,9 +14627,28 @@ We will create a vocabulary using the training dataset and then pass the trainin
     <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 
 
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>.vector_cache/glove.6B.zip: 862MB [06:27, 2.22MB/s]                           
-100%|█████████▉| 399900/400000 [00:43&lt;00:00, 9704.72it/s]</pre>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Train on 7613 samples
+7613/7613 - 13s - loss: 0.5445
+Train on 7613 samples
+7613/7613 - 5s - loss: 0.4229
+Train on 7613 samples
+7613/7613 - 5s - loss: 0.3929
+Train on 7613 samples
+7613/7613 - 5s - loss: 0.3781
+Train on 7613 samples
+7613/7613 - 5s - loss: 0.3590
+Train on 7613 samples
+7613/7613 - 10s - loss: 0.5559
+Train on 7613 samples
+7613/7613 - 5s - loss: 0.4233
+Train on 7613 samples
+7613/7613 - 5s - loss: 0.3998
+Train on 7613 samples
+7613/7613 - 5s - loss: 0.3742
+Train on 7613 samples
+7613/7613 - 5s - loss: 0.3559
+</pre>
 </div>
 </div>
 
@@ -14749,7 +14662,7 @@ We will create a vocabulary using the training dataset and then pass the trainin
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[19]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">LABEL</span><span class="o">.</span><span class="n">build_vocab</span><span class="p">(</span><span class="n">train_ds</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">checkpoint_predictions</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14757,178 +14670,13 @@ We will create a vocabulary using the training dataset and then pass the trainin
 </div>
 </div>
 
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>We build the iterators.</p>
-
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[20]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">128</span>
-
-<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
-
-<span class="n">train_iterator</span><span class="p">,</span> <span class="n">valid_iterator</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">BucketIterator</span><span class="o">.</span><span class="n">splits</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">train_ds</span><span class="p">,</span> <span class="n">val_ds</span><span class="p">),</span> 
-    <span class="n">batch_size</span> <span class="o">=</span> <span class="n">BATCH_SIZE</span><span class="p">,</span>
-    <span class="n">sort_within_batch</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">device</span> <span class="o">=</span> <span class="n">device</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="LSTM-architecture">LSTM architecture<a class="anchor-link" href="#LSTM-architecture">&#182;</a></h2>
-</div>
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Declare-Hyperparameters">Declare Hyperparameters<a class="anchor-link" href="#Declare-Hyperparameters">&#182;</a></h3>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[21]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Hyperparameters</span>
-<span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">25</span>
-<span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.001</span>
-
-<span class="n">INPUT_DIM</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">TEXT</span><span class="o">.</span><span class="n">vocab</span><span class="p">)</span>
-<span class="n">EMBEDDING_DIM</span> <span class="o">=</span> <span class="mi">200</span>
-<span class="n">HIDDEN_DIM</span> <span class="o">=</span> <span class="mi">256</span>
-<span class="n">OUTPUT_DIM</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">N_LAYERS</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="n">BIDIRECTIONAL</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">DROPOUT</span> <span class="o">=</span> <span class="mf">0.2</span>
-<span class="n">PAD_IDX</span> <span class="o">=</span> <span class="n">TEXT</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">stoi</span><span class="p">[</span><span class="n">TEXT</span><span class="o">.</span><span class="n">pad_token</span><span class="p">]</span> <span class="c1"># padding</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Setting-up-the-LSTM-model">Setting up the LSTM model<a class="anchor-link" href="#Setting-up-the-LSTM-model">&#182;</a></h3>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[22]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">LSTM_net</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vocab_size</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">,</span> <span class="n">output_dim</span><span class="p">,</span> <span class="n">n_layers</span><span class="p">,</span> 
-                 <span class="n">bidirectional</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">pad_idx</span><span class="p">):</span>
-        
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">vocab_size</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">,</span> <span class="n">padding_idx</span> <span class="o">=</span> <span class="n">pad_idx</span><span class="p">)</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span><span class="n">embedding_dim</span><span class="p">,</span> 
-                           <span class="n">hidden_dim</span><span class="p">,</span> 
-                           <span class="n">num_layers</span><span class="o">=</span><span class="n">n_layers</span><span class="p">,</span> 
-                           <span class="n">bidirectional</span><span class="o">=</span><span class="n">bidirectional</span><span class="p">,</span> 
-                           <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_dim</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="p">)</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_dim</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
-        
-    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">text_lengths</span><span class="p">):</span>
-        
-        <span class="c1"># text = [sent len, batch size]</span>
-        
-        <span class="n">embedded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedding</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-        
-        <span class="c1"># embedded = [sent len, batch size, emb dim]</span>
-        
-        <span class="c1">#pack sequence</span>
-        <span class="n">packed_embedded</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">rnn</span><span class="o">.</span><span class="n">pack_padded_sequence</span><span class="p">(</span><span class="n">embedded</span><span class="p">,</span> <span class="n">text_lengths</span><span class="p">)</span>
-        
-        <span class="n">packed_output</span><span class="p">,</span> <span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="n">cell</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn</span><span class="p">(</span><span class="n">packed_embedded</span><span class="p">)</span>
-        
-        <span class="c1">#unpack sequence</span>
-        <span class="c1"># output, output_lengths = nn.utils.rnn.pad_packed_sequence(packed_output)</span>
-
-        <span class="c1"># output = [sent len, batch size, hid dim * num directions]</span>
-        <span class="c1"># output over padding tokens are zero tensors</span>
-        
-        <span class="c1"># hidden = [num layers * num directions, batch size, hid dim]</span>
-        <span class="c1"># cell = [num layers * num directions, batch size, hid dim]</span>
-        
-        <span class="c1"># concat the final forward (hidden[-2,:,:]) and backward (hidden[-1,:,:]) hidden layers</span>
-        <span class="c1"># and apply dropout</span>
-        
-        <span class="n">hidden</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">hidden</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,:,:],</span> <span class="n">hidden</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,:,:]),</span> <span class="n">dim</span> <span class="o">=</span> <span class="mi">1</span><span class="p">))</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">hidden</span><span class="p">)</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
-                
-        <span class="c1">#hidden = [batch size, hid dim * num directions]</span>
-            
-        <span class="k">return</span> <span class="n">output</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[23]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#creating instance of our LSTM_net class</span>
-
-<span class="n">model</span> <span class="o">=</span> <span class="n">LSTM_net</span><span class="p">(</span><span class="n">INPUT_DIM</span><span class="p">,</span> 
-            <span class="n">EMBEDDING_DIM</span><span class="p">,</span> 
-            <span class="n">HIDDEN_DIM</span><span class="p">,</span> 
-            <span class="n">OUTPUT_DIM</span><span class="p">,</span> 
-            <span class="n">N_LAYERS</span><span class="p">,</span> 
-            <span class="n">BIDIRECTIONAL</span><span class="p">,</span> 
-            <span class="n">DROPOUT</span><span class="p">,</span> 
-            <span class="n">PAD_IDX</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>loading the pretrained vectors into the embedding matrix.</p>
-
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[24]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pretrained_embeddings</span> <span class="o">=</span> <span class="n">TEXT</span><span class="o">.</span><span class="n">vocab</span><span class="o">.</span><span class="n">vectors</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">pretrained_embeddings</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy_</span><span class="p">(</span><span class="n">pretrained_embeddings</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predictions</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 
      </div>
@@ -14944,14 +14692,154 @@ We will create a vocabulary using the training dataset and then pass the trainin
 <div class="jp-OutputArea-child">
 
     
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[20]:</div>
 
 
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>torch.Size([14079, 200])
-</pre>
+
+
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
+<pre>(3263, 1)</pre>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[21]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sub</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">predictions</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+
+     </div>
 </div>
 </div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[22]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sub</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[22]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>9</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>11</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[23]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sub</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;submission.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[24]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="n">Counter</span><span class="p">(</span><span class="n">sub</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">])</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
 
 <div class="jp-OutputArea-child">
 
@@ -14962,395 +14850,13 @@ We will create a vocabulary using the training dataset and then pass the trainin
 
 
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
-<pre>tensor([[ 0.0000,  0.0000,  0.0000,  ...,  0.0000,  0.0000,  0.0000],
-        [ 0.0000,  0.0000,  0.0000,  ...,  0.0000,  0.0000,  0.0000],
-        [ 0.0000,  0.0000,  0.0000,  ...,  0.0000,  0.0000,  0.0000],
-        ...,
-        [ 0.5852,  0.2087, -0.2828,  ...,  0.3333,  0.9325, -0.0848],
-        [ 0.0000,  0.0000,  0.0000,  ...,  0.0000,  0.0000,  0.0000],
-        [-0.1776,  0.2225,  0.3361,  ...,  0.5330,  0.6103, -0.4537]])</pre>
+<pre>Counter({1: 1172, 0: 2091})</pre>
 </div>
 
 </div>
 
 </div>
 
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[25]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#  to initiaise padded to zeros</span>
-<span class="n">model</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">PAD_IDX</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">EMBEDDING_DIM</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">embedding</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>tensor([[ 0.0000,  0.0000,  0.0000,  ...,  0.0000,  0.0000,  0.0000],
-        [ 0.0000,  0.0000,  0.0000,  ...,  0.0000,  0.0000,  0.0000],
-        [ 0.0000,  0.0000,  0.0000,  ...,  0.0000,  0.0000,  0.0000],
-        ...,
-        [ 0.5852,  0.2087, -0.2828,  ...,  0.3333,  0.9325, -0.0848],
-        [ 0.0000,  0.0000,  0.0000,  ...,  0.0000,  0.0000,  0.0000],
-        [-0.1776,  0.2225,  0.3361,  ...,  0.5330,  0.6103, -0.4537]])
-</pre>
-</div>
-</div>
-
-</div>
-
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[26]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="c1">#CNN to GPU</span>
-
-
-<span class="c1"># Loss and optimizer</span>
-<span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BCEWithLogitsLoss</span><span class="p">()</span>
-
-<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[27]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">binary_accuracy</span><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns accuracy per batch, i.e. if you get 8/10 right, this returns 0.8, NOT 8</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1">#round predictions to the closest integer</span>
-    <span class="n">rounded_preds</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">preds</span><span class="p">))</span>
-    <span class="n">correct</span> <span class="o">=</span> <span class="p">(</span><span class="n">rounded_preds</span> <span class="o">==</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span> <span class="c1">#convert into float for division </span>
-    <span class="n">acc</span> <span class="o">=</span> <span class="n">correct</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">correct</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">acc</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Training-the-model">Training the model<a class="anchor-link" href="#Training-the-model">&#182;</a></h3>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[28]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># training function </span>
-<span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">iterator</span><span class="p">):</span>
-    
-    <span class="n">epoch_loss</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">epoch_acc</span> <span class="o">=</span> <span class="mi">0</span>
-    
-    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
-    
-    <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
-        <span class="n">text</span><span class="p">,</span> <span class="n">text_lengths</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">text</span>
-        
-        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-        <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">text_lengths</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">batch</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
-        <span class="n">acc</span> <span class="o">=</span> <span class="n">binary_accuracy</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">batch</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
-
-        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-        
-        <span class="n">epoch_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-        <span class="n">epoch_acc</span> <span class="o">+=</span> <span class="n">acc</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-        
-
-    <span class="k">return</span> <span class="n">epoch_loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterator</span><span class="p">),</span> <span class="n">epoch_acc</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[29]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">iterator</span><span class="p">):</span>
-    
-    <span class="n">epoch_acc</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
-    
-    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
-            <span class="n">text</span><span class="p">,</span> <span class="n">text_lengths</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">text</span>
-            <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">text_lengths</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">acc</span> <span class="o">=</span> <span class="n">binary_accuracy</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">batch</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
-            
-            <span class="n">epoch_acc</span> <span class="o">+=</span> <span class="n">acc</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-        
-    <span class="k">return</span> <span class="n">epoch_acc</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[30]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="n">loss</span><span class="o">=</span><span class="p">[]</span>
-<span class="n">acc</span><span class="o">=</span><span class="p">[]</span>
-<span class="n">val_acc</span><span class="o">=</span><span class="p">[]</span>
-
-<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
-    
-    <span class="n">train_loss</span><span class="p">,</span> <span class="n">train_acc</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">train_iterator</span><span class="p">)</span>
-    <span class="n">valid_acc</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">valid_iterator</span><span class="p">)</span>
-    
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Train Loss: </span><span class="si">{</span><span class="n">train_loss</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1"> | Train Acc: </span><span class="si">{</span><span class="n">train_acc</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">%&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1"> Val. Acc: </span><span class="si">{</span><span class="n">valid_acc</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">%&#39;</span><span class="p">)</span>
-    
-    <span class="n">loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_loss</span><span class="p">)</span>
-    <span class="n">acc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_acc</span><span class="p">)</span>
-    <span class="n">val_acc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">valid_acc</span><span class="p">)</span>
-    
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;time:</span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>	Train Loss: 0.556 | Train Acc: 70.79%
-	 Val. Acc: 73.26%
-	Train Loss: 0.481 | Train Acc: 76.72%
-	 Val. Acc: 80.78%
-	Train Loss: 0.422 | Train Acc: 79.39%
-	 Val. Acc: 81.53%
-	Train Loss: 0.370 | Train Acc: 82.08%
-	 Val. Acc: 80.94%
-	Train Loss: 0.316 | Train Acc: 84.18%
-	 Val. Acc: 79.95%
-	Train Loss: 0.257 | Train Acc: 87.09%
-	 Val. Acc: 80.31%
-	Train Loss: 0.226 | Train Acc: 88.78%
-	 Val. Acc: 78.95%
-	Train Loss: 0.213 | Train Acc: 88.74%
-	 Val. Acc: 78.11%
-</pre>
-</div>
-</div>
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>100%|█████████▉| 399900/400000 [01:00&lt;00:00, 9704.72it/s]</pre>
-</div>
-</div>
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>	Train Loss: 0.191 | Train Acc: 89.50%
-	 Val. Acc: 78.09%
-	Train Loss: 0.187 | Train Acc: 89.45%
-	 Val. Acc: 78.49%
-	Train Loss: 0.178 | Train Acc: 90.16%
-	 Val. Acc: 77.05%
-	Train Loss: 0.179 | Train Acc: 89.89%
-	 Val. Acc: 78.51%
-	Train Loss: 0.173 | Train Acc: 89.58%
-	 Val. Acc: 77.05%
-	Train Loss: 0.176 | Train Acc: 90.00%
-	 Val. Acc: 79.78%
-	Train Loss: 0.173 | Train Acc: 90.05%
-	 Val. Acc: 74.88%
-	Train Loss: 0.174 | Train Acc: 89.76%
-	 Val. Acc: 75.94%
-	Train Loss: 0.163 | Train Acc: 90.42%
-	 Val. Acc: 78.59%
-	Train Loss: 0.165 | Train Acc: 90.64%
-	 Val. Acc: 77.22%
-	Train Loss: 0.166 | Train Acc: 90.21%
-	 Val. Acc: 77.63%
-	Train Loss: 0.164 | Train Acc: 89.83%
-	 Val. Acc: 76.88%
-	Train Loss: 0.161 | Train Acc: 90.44%
-	 Val. Acc: 76.40%
-	Train Loss: 0.160 | Train Acc: 90.05%
-	 Val. Acc: 75.69%
-	Train Loss: 0.158 | Train Acc: 90.47%
-	 Val. Acc: 79.10%
-	Train Loss: 0.156 | Train Acc: 90.43%
-	 Val. Acc: 78.11%
-	Train Loss: 0.151 | Train Acc: 91.00%
-	 Val. Acc: 76.61%
-time:21.172
-</pre>
-</div>
-</div>
-
-</div>
-
-</div>
-
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Plot-a-graph-to-trace-model-performance">Plot a graph to trace model performance<a class="anchor-link" href="#Plot-a-graph-to-trace-model-performance">&#182;</a></h3>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[31]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;runs&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;normalised measure of loss/accuracy&quot;</span><span class="p">)</span>
-<span class="n">x_len</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">acc</span><span class="p">)))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">x_len</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;result of LSTM&#39;</span><span class="p">)</span>
-<span class="n">loss</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span><span class="o">/</span><span class="nb">max</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_len</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="s1">&#39;r.&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;loss&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_len</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;accuracy&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_len</span><span class="p">,</span> <span class="n">val_acc</span><span class="p">,</span> <span class="s1">&#39;g.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;val_accuracy&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[31]:</div>
-
-
-
-
-<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
-<pre>&lt;function matplotlib.pyplot.show(*args, **kw)&gt;</pre>
-</div>
-
-</div>
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-
-
-<div class="jp-RenderedImage jp-OutputArea-output ">
-<img src="data:image/png;base64,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e/fux77//vv/ALj77rv7LF26tPfDDz+8Ztq0acP69OlTt3Llyu5HH330++eff/62q666aui+ffvyunbt2nDPPfe8PWHChP11dXV8+ctfHlxRUdEL4OKLL946fvz4vbfccsthf/zjH98E+O1vf9vr1ltvLfzDH/7wZrLfb2uaGwwnbE1+R+OCu283s2NTGZykX7pr1pmqvSTyj7et5bIhxsYyicaZbuk8L8lI9/Gy1ZNPcsjppzOytpa8BQtoWLqU1ckm+gceeGDNgAED6nfv3m3HHnvs2M9//vM7rrzyymEVFRWvjh49umbz5s35ANdcc82gXr161a9evfplgOrq6lbHfnnzzTe7/v3vf19dUFDAtm3b8p577rlXO3XqxCOPPNLzv/7rvwY/8cQTb86bN69w7dq1XVatWvVyp06d2Lx5c35hYWH9rFmzhm7cuLHg8MMPr1u0aFG/mTNnZnRkwDBJPs/M+rj7dgAz6xuynKRJIrWJdDeJQvb8405ENsQI2ROn5JbycnrW1pIXm2mWvPJyeiab5G+++eYBv//97w8FqKqq6rRw4cLCiRMn7ho9enQNwIABA+oBnnrqqV4PPvjgW43lCgsLW51e9rOf/ez2goJYmtu2bVv+5z//+eFr1qzpamZeW1trAH/60596XX755dWNzfmNxzv33HPfveOOO/p+5StfeXf58uU9fvOb37ydzPeZrDDJeh7wdPDIHMC/A9+LLiRpi0SbYDNRsxaRjqmsjF0LFtBQV0deQQENZWUkNdXs0qVLe/7lL3/puWzZsld79uzZMHHixFHHHHPM+6tXr+564LbujpkdtI/4dXv37v3QBj169GhofP+tb32r6OSTT971xz/+8c3XXnut8ymnnDIqbr8H3e++4oor3j3ttNOO6tq1q59xxhnbM31Pv9XBcNz9PuBzwGZgC/BZd/951IGlVLaMyJGApprPwyopgWuvTazZN5FyItIxTZnCnqVLWf3Nb7IhFU31O3bsyO/du3d9z549G/7xj390ffHFFw/Zv39/3rPPPtvz1Vdf7QzQ2FxfWlr63vz58w9rLNvYXN+vX7/a5cuXd62vr+fRRx/t09yx3nvvvfzBgwfXANx22239P/ieprz3s5/9rLC2tpb44w0bNqx2wIABtfPmzRv0pS99KeOT+ISaoMbdVwG/Ah4FdpvZ0EijSqXGqu53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
-"
->
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-     </div>
-</div>
-</div>
 </div>
 
 </div>
