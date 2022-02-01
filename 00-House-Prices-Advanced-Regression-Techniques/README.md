@@ -1,6 +1,8 @@
 # House Prices Advanced Regression Techniques
 to check the notebook,  
-https://nbviewer.jupyter.org/github/weyoweyo/House-Prices-Advanced-Regression-Techniques/blob/main/HousePricesAdvancedRegressionTechniques.ipynb  
+https://nbviewer.org/github/weyoweyo/Kaggle/blob/main/00-House-Prices-Advanced-Regression-Techniques/HousePricesAdvancedRegressionTechniques.ipynb
+
+
 to check the report,  
 https://htmlpreview.github.io/?https://github.com/weyoweyo/Kaggle/blob/main/00-House-Prices-Advanced-Regression-Techniques/report.html
 
